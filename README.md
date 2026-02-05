@@ -58,6 +58,75 @@ def select_action(self, state):
 
 ---
 
+## 🧠 Deep Learning & Reinforcement Learning Pipeline
+
+### Pipeline Tổng Quan
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MICROGRID RL PIPELINE                        │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │
+│  │ ENVIRONMENT │ →  │ RL AGENT    │ →  │ NEURAL NET  │         │
+│  │ (Microgrid) │    │ (Decision)  │    │ (DQN)       │         │
+│  └─────────────┘    └─────────────┘    └─────────────┘         │
+│        ↓                   ↓                  ↓                 │
+│   State (8D)         Action (5)         Q-values               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### RL Ở Giai Đoạn Nào? Tác Động Ra Sao?
+
+| Giai Đoạn | Công Nghệ | Vai Trò | Tác Động |
+|-----------|-----------|---------|----------|
+| **Perception** | State Vector | Thu thập 8 features từ môi trường | Hiểu tình huống hiện tại |
+| **Decision** | **RL Agent** | Chọn 1 trong 5 hành động | Ra quyết định thông minh |
+| **Learning** | **Deep Learning** | Neural network học Q-function | Cải thiện theo thời gian |
+| **Action** | Environment | Thực thi hành động, nhận reward | Thay đổi trạng thái hệ thống |
+
+### DQN (Deep Q-Network) Là Gì?
+
+**DQN = Q-Learning + Deep Neural Network**
+
+- **Q-Learning**: Thuật toán RL học giá trị của mỗi hành động
+- **Deep Neural Network**: Xấp xỉ Q-function cho state space liên tục
+
+```
+DQN Architecture:
+   State (8D)  ──►  [256 → 256 → 128]  ──►  Q-values (5 actions)
+                     ReLU    ReLU   ReLU
+   
+   Q(s,a) = Expected cumulative reward nếu chọn action a ở state s
+   Agent chọn: a* = argmax Q(s,a)  (action có Q-value cao nhất)
+```
+
+### Vòng Lặp Training
+
+```
+Repeat for each episode:
+   1. Observe state s (battery, demand, solar, wind, price, time)
+   2. ε-greedy selection:
+      - Random action (với xác suất ε) → Exploration
+      - argmax Q(s,a) (với xác suất 1-ε) → Exploitation
+   3. Execute action a → receive reward r, observe s'
+   4. Store (s, a, r, s', done) in Replay Buffer
+   5. Sample random batch from buffer
+   6. Compute target: y = r + γ × max Q(s',a')  [Bellman equation]
+   7. Update network: minimize loss = (Q(s,a) - y)²
+   8. Repeat until episode ends (24 hours simulated)
+```
+
+### Tại Sao Dùng DQN Thay Vì Q-Learning Thông Thường?
+
+| Q-Learning | DQN |
+|------------|-----|
+| Bảng Q-table | Neural Network |
+| State rời rạc | State liên tục (8D) |
+| Không scale | Scale được với state phức tạp |
+| Không generalize | Generalize cho state chưa gặp |
+
+---
+
 # 📘 HƯỚNG DẪN CHI TIẾT ĐỀ BÀI
 
 ---
