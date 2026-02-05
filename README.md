@@ -1,6 +1,45 @@
-# 📘 HƯỚNG DẪN CHI TIẾT ĐỀ BÀI
+# 🔋 Microgrid Energy Optimization using Deep Reinforcement Learning
 
-## Tối Ưu Hóa Năng Lượng Microgrid Sử Dụng Deep Reinforcement Learning
+## Tối Ưu Hóa Năng Lượng Microgrid Sử Dụng Deep Reinforcement Learning (DQN)
+
+---
+
+## 📊 Kết Quả Training
+
+### Performance Metrics
+
+| Metric | Trained Agent | Random Baseline | Improvement |
+|--------|---------------|-----------------|-------------|
+| **Mean Episode Reward** | 14.75 | -3.34 | **+541.1%** |
+| **Mean Daily Cost** | $1.26 | $16.42 | **-92.3%** |
+| **Renewable Usage Ratio** | 82.5% | 47.8% | +34.7% |
+| **Unmet Demand Ratio** | 3.4% | 16.1% | -12.7% |
+| **Demand Satisfaction** | 96.6% | 83.9% | +12.7% |
+
+### Training Curves
+
+![Training Curves](evaluation_results/training_curves.png)
+
+### Agent vs Random Comparison
+
+![Agent vs Random](evaluation_results/agent_vs_random.png)
+
+### 24-Hour Episode Analysis
+
+![Episode Analysis](evaluation_results/episode_analysis.png)
+
+### Key Conclusions
+
+✅ **DQN agent đã học thành công chính sách phân phối năng lượng:**
+
+- Tối đa hóa sử dụng nguồn năng lượng tái tạo (82.5%)
+- Giảm chi phí mua điện từ lưới tới 92.3%  
+- Duy trì mức pin hợp lý cho giờ cao điểm
+- Đáp ứng 96.6% nhu cầu tiêu thụ điện
+
+---
+
+# 📘 HƯỚNG DẪN CHI TIẾT ĐỀ BÀI
 
 ---
 
