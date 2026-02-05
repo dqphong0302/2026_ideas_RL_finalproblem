@@ -16,6 +16,25 @@
 | **Unmet Demand Ratio** | 3.4% | 16.1% | -12.7% |
 | **Demand Satisfaction** | 96.6% | 83.9% | +12.7% |
 
+### 🎯 Random Baseline là gì?
+
+**Random Baseline** là một agent **không học gì cả**, chỉ đơn giản chọn hành động ngẫu nhiên ở mỗi bước:
+
+```python
+def select_action(self, state):
+    return random.randint(0, 4)  # Ngẫu nhiên 1 trong 5 hành động
+```
+
+**Tại sao dùng Random Baseline?**
+
+- Đánh giá hiệu quả học: Xem agent có thực sự "học" được không
+- Đo lường cải thiện: Tính % improvement so với baseline
+- Tiêu chuẩn cơ bản: Bất kỳ thuật toán nào cũng phải tốt hơn random
+
+**Random agent** chọn hành động không theo logic → thường xả pin khi giá điện thấp (lãng phí), mua điện lưới khi giá cao (tốn tiền).
+
+**Trained DQN agent** đã học được → sạc pin khi năng lượng tái tạo dồi dào, xả pin khi giá điện cao, tối đa hóa dùng solar/wind.
+
 ### Training Curves
 
 ![Training Curves](evaluation_results/training_curves.png)
