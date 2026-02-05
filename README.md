@@ -119,6 +119,28 @@ def select_action(self, state):
 
 ---
 
+## 📈 Data Generation (Simulated Environment)
+
+Theo yêu cầu đề bài, dữ liệu được **mô phỏng ngẫu nhiên theo mô hình xác suất**, không sử dụng dataset từ nguồn bên ngoài:
+
+| Thành phần | Công thức mô phỏng | Ý nghĩa |
+|------------|---------------------|---------|
+| **Solar** | `sin((hour-6) × π/12) × 50 × random(0.8, 1.2)` | Cao nhất lúc 12h, có nhiễu |
+| **Wind** | `30 × random()` | Hoàn toàn ngẫu nhiên 0-30 kW |
+| **Demand** | `40 + 20 × sin((hour-6) × π/12) + random(0, 10)` | Cao nhất buổi chiều, có nhiễu |
+| **Price** | `0.15 + 0.1 × (17≤hour≤21)` | Giá cao giờ cao điểm 17h-21h |
+
+```python
+# Ví dụ code sinh dữ liệu
+solar = max(0, np.sin((hour - 6) * np.pi / 12)) * 50 * (0.8 + 0.4 * np.random.random())
+wind = 30 * np.random.random()
+demand = 40 + 20 * np.sin((hour - 6) * np.pi / 12) + 10 * np.random.random()
+```
+
+> **Lưu ý:** Đây là **Stochastic Simulation** theo đúng yêu cầu của đề bài, không phải dataset thực tế.
+
+---
+
 ## 🧠 Deep Learning & Reinforcement Learning Pipeline
 
 ### Pipeline Tổng Quan
