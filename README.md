@@ -57,10 +57,10 @@ def select_action(self, state):
 
 ✅ **DQN agent đã học thành công chính sách phân phối năng lượng:**
 
-- Tối đa hóa sử dụng nguồn năng lượng tái tạo (82.5%)
-- Giảm chi phí mua điện từ lưới tới 92.3%  
+- Tối đa hóa sử dụng nguồn năng lượng tái tạo (66.9%)
+- Giảm chi phí mua điện từ lưới tới 15.9%
+- Cải thiện reward so với random baseline: +37.8%
 - Duy trì mức pin hợp lý cho giờ cao điểm
-- Đáp ứng 96.6% nhu cầu tiêu thụ điện
 
 ---
 
@@ -111,10 +111,10 @@ def select_action(self, state):
 > Dự án đã chứng minh **Deep Reinforcement Learning (DQN)** có thể:
 >
 > - ✅ Học được chính sách tối ưu phân phối năng lượng
-> - ✅ Cải thiện **541%** reward so với random baseline
-> - ✅ Giảm **92.3%** chi phí mua điện từ lưới
-> - ✅ Đạt **82.5%** tỷ lệ sử dụng năng lượng tái tạo
-
+> - ✅ Cải thiện **+37.8%** reward so với random baseline
+> - ✅ Giảm **15.9%** chi phí mua điện từ lưới
+> - ✅ Đạt **66.9%** tỷ lệ sử dụng năng lượng tái tạo
+>
 > Tuy nhiên, việc triển khai thực tế cần xem xét đầy đủ các yếu tố đạo đức, an toàn và khả năng mở rộng của hệ thống.
 
 ---
