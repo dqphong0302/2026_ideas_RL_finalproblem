@@ -66,6 +66,61 @@ def select_action(self, state):
 
 ---
 
+## ⚖️ Ethical, Practical & Future Considerations
+
+### 1. Vấn Đề Đạo Đức (Ethical Concerns)
+
+| Vấn đề | Mô tả | Giải pháp đề xuất |
+|--------|-------|-------------------|
+| **Công bằng năng lượng** | AI có thể ưu tiên tối ưu chi phí thay vì đảm bảo điện cho tất cả | Thêm constraint đảm bảo demand satisfaction tối thiểu |
+| **Transparency** | Black-box decision làm người dùng khó hiểu | Explainable AI (XAI), visualization của policy |
+| **Bias trong data** | Model trained trên data mùa hè có thể fail vào mùa đông | Đa dạng hóa training data, continuous learning |
+| **Privacy** | Thu thập dữ liệu tiêu thụ có thể xâm phạm quyền riêng tư | Federated Learning, data anonymization |
+
+### 2. Thách Thức Triển Khai Thực Tế (Practical Deployment)
+
+**Challenges:**
+
+- 🔧 **Hardware**: Cần edge device đủ mạnh để chạy inference real-time
+- 📡 **Connectivity**: Mất kết nối internet → cần fallback policy
+- 🔋 **Battery degradation**: Model cần cập nhật khi pin xuống cấp
+- ⚡ **Safety**: Cần mechanism override manual khi AI quyết định sai
+- 📊 **Monitoring**: Cần dashboard giám sát hiệu suất Agent
+
+**Recommendations:**
+
+```
+1. Hybrid approach: RL + Rule-based fallback
+2. Edge deployment với periodic cloud sync
+3. Human-in-the-loop cho critical decisions
+4. A/B testing trước khi full deployment
+```
+
+### 3. Hướng Phát Triển Tương Lai (Future Enhancements)
+
+| Cải tiến | Mô tả | Lợi ích tiềm năng |
+|----------|-------|-------------------|
+| **Multi-Agent RL** | Nhiều agent quản lý các zone khác nhau | Scalable cho grid lớn |
+| **PPO/A2C** | Thuật toán Policy Gradient thay DQN | Ổn định hơn, sample efficient |
+| **Continuous Actions** | Dùng DDPG/SAC cho action liên tục | Điều khiển chính xác hơn |
+| **Demand Forecasting** | Kết hợp LSTM dự đoán demand | Proactive planning |
+| **Multi-objective RL** | Tối ưu đồng thời cost, reliability, emissions | Cân bằng nhiều mục tiêu |
+| **Transfer Learning** | Train 1 lần, deploy nhiều microgrid | Giảm thời gian training |
+| **Digital Twin** | Mô phỏng trước khi deploy thật | An toàn, test edge cases |
+
+### 4. Kết Luận Tổng Quan
+
+> Dự án đã chứng minh **Deep Reinforcement Learning (DQN)** có thể:
+>
+> - ✅ Học được chính sách tối ưu phân phối năng lượng
+> - ✅ Cải thiện **541%** reward so với random baseline
+> - ✅ Giảm **92.3%** chi phí mua điện từ lưới
+> - ✅ Đạt **82.5%** tỷ lệ sử dụng năng lượng tái tạo
+
+> Tuy nhiên, việc triển khai thực tế cần xem xét đầy đủ các yếu tố đạo đức, an toàn và khả năng mở rộng của hệ thống.
+
+---
+
 ## 🧠 Deep Learning & Reinforcement Learning Pipeline
 
 ### Pipeline Tổng Quan
