@@ -18,11 +18,9 @@
 
 | Metric | Trained Agent | Random Baseline | Improvement |
 |--------|---------------|-----------------|-------------|
-| **Mean Episode Reward** | 14.75 | -3.34 | **+541.1%** |
-| **Mean Daily Cost** | $1.26 | $16.42 | **-92.3%** |
-| **Renewable Usage Ratio** | 82.5% | 47.8% | +34.7% |
-| **Unmet Demand Ratio** | 3.4% | 16.1% | -12.7% |
-| **Demand Satisfaction** | 96.6% | 83.9% | +12.7% |
+| **Mean Episode Reward** | +14.77 | +10.72 | **+37.8%** |
+| **Mean Daily Cost** | $64.78 | $77.02 | **-15.9%** |
+| **Renewable Usage Ratio** | 66.9% | 58.0% | +8.9% |
 
 ### 🎯 Random Baseline là gì?
 
