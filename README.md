@@ -2,6 +2,14 @@
 
 ## Tối Ưu Hóa Năng Lượng Microgrid Sử Dụng Deep Reinforcement Learning (DQN)
 
+### 📁 Files
+
+| File | Mô Tả | Đối Tượng |
+|------|-------|-----------|
+| **`Microgrid_DQN_Simple.ipynb`** | ⭐ Phiên bản đơn giản, CHỈ 3 BƯỚC | Người mới bắt đầu |
+| `Microgrid_DQN_Colab.ipynb` | Phiên bản đầy đủ, chi tiết | Sinh viên nâng cao |
+| `REPORT.md` / `REPORT.html` | Báo cáo kết quả | Tất cả |
+
 ---
 
 ## 📊 Kết Quả Training
