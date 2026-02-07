@@ -18,6 +18,13 @@ Q(s, a) ≈ Q_θ(s, a)    (θ = weights của neural network)
 
 Q-value cho biết **tổng reward kỳ vọng** khi thực hiện action `a` tại state `s` và follow optimal policy sau đó.
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): DQN là gì?**
+>
+> Hãy tưởng tượng bạn đang chơi một video game khó.
+>
+> - **Q-Learning cổ điển:** Giống như bạn ghi chép lại mọi tình huống vào một cuốn sổ tay khổng lồ: "Gặp quái A ở cửa hang -> Nên đánh kiếm -> Được 10 điểm". Nhưng nếu game quá lớn (như đời thực), cuốn sổ tay này sẽ dày vô tận, không thể chứa nổi.
+> - **Deep Q-Network (DQN):** Thay vì dùng sổ tay, bạn thuê một chuyên gia (Mạng Neural) để học các quy luật chung. Chuyên gia này không nhớ vẹt từng tình huống, mà nhìn vào tình hình (Trạng thái) và phán đoán ngay: "Tình thế này nhìn quen quen, nên chạy đi thì hơn". Nhờ đó, DQN có thể xử lý được vô số tình huống phức tạp mà không cần bộ nhớ vô hạn.
+
 ### 1.2 Tại Sao Chọn DQN Cho Microgrid?
 
 | Tiêu chí | Lý do |
@@ -118,6 +125,18 @@ Double DQN:   a* = argmax_a' Q_online(s', a')    ← chọn action bằng online
 
 → Giảm overestimation → Q-values chính xác hơn
 ```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Tại sao phải phức tạp vậy? (Target Network & Replay)**
+>
+> Để dạy AI học ổn định, ta dùng 2 mẹo chính:
+>
+> 1. **Experience Replay (Ôn bài ngẫu nhiên):**
+>     - Nếu bạn học toán: Bài 1 -> Bài 2 -> Bài 3... bạn dễ bị cuốn theo mạch bài và quên bài cũ.
+>     - DQN làm khác: Nó xé lẻ các bài tập ra, bỏ vào hộp, lắc đều lên rồi rút ngẫu nhiên ra học. Hôm nay học bài 5, bài 1, bài 10. Cách này giúp nó hiểu bản chất vấn đề thay vì học vẹt theo thứ tự.
+>
+> 2. **Target Network (Vị thầy giáo kiên định):**
+>     - Hãy tưởng tượng bạn đang tập bắn cung. Nếu bia mục tiêu cứ chạy lung tung liên tục, bạn sẽ không bao giờ bắn trúng.
+>     - **Target Network** giống như việc ta giữ bia mục tiêu đứng yên một lúc để bạn tập ngắm. Sau 1000 lần bắn (1000 steps), ta mới di chuyển bia sang vị trí mới khó hơn. Nhờ bia đứng yên một lúc, bạn (AI) mới có thể học cách ngắm bắn chuẩn xác được.
 
 ---
 
@@ -223,6 +242,15 @@ Episode:  0    100   200   300   400   500
 - ε = 0.5: 50% random, 50% best action → cân bằng explore/exploit
 - ε = 0.01: 1% random → chủ yếu exploit policy đã học
 ```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Chiến lược "Đi ăn nhà hàng"**
+>
+> Làm sao để tìm được quán ăn ngon nhất thành phố?
+>
+> - **Explore (Khám phá - ε cao):** Thời gian đầu mới đến, ngày nào bạn cũng đi ăn thử một quán lạ hoắc, bất chấp rủi ro (có thể dở tệ). Mục đích là để biết quán nào ngon, quán nào dở.
+> - **Exploit (Khai thác - ε thấp):** Sau khi đã thử đủ nhiều quán, bạn bắt đầu chốt lại danh sách "những quán ruột". Giờ đây, 99% số lần đi ăn bạn sẽ chọn quán ngon nhất mà bạn biết, thi thoảng lắm mới mạo hiểm thử quán mới.
+>
+> **Epsilon Greedy** chính là quá trình chuyển đổi từ "kẻ mạo hiểm đi thử lung tung" thành "người sành ăn chỉ chọn quán ngon". AI ban đầu đánh bừa (để học), sau đó đánh khôn (để thắng).
 
 ### 4.3 Công Thức Cập Nhật
 

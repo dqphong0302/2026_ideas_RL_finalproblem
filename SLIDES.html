@@ -949,6 +949,16 @@
                             • Bỏ qua phần "tại sao RL"<br>
                             • Không có ví dụ minh họa
                         </div>
+                        <div class="highlight-box mt-8"
+                            style="font-size: 13px; background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6;">
+                            💡 <strong>Góc nhìn Non-IT:</strong> Hãy ví von hệ thống như <strong>"Quản lý bếp ăn gia
+                                đình"</strong>:<br>
+                            • <strong>Solar/Wind:</strong> Rau nhà trồng (lúc có lúc không, miễn phí).<br>
+                            • <strong>Grid:</strong> Siêu thị (lúc nào cũng có, giá đổi theo giờ).<br>
+                            • <strong>Battery:</strong> Tủ lạnh (cất rau dùng dần).<br>
+                            • <strong>AI:</strong> Người quản gia tính toán "trưa nay ăn rau vườn hay rau siêu thị" để
+                            tiết kiệm nhất.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -996,6 +1006,13 @@
                             <div class="step-title">Transitions & Termination</div>
                             <div class="step-desc">Công thức cập nhật pin, demand, kết thúc episode</div>
                         </div>
+                    </div>
+                    <div class="highlight-box mt-8"
+                        style="font-size: 13px; background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6;">
+                        💡 <strong>Góc nhìn Non-IT (Reward):</strong> Giống dạy cún cưng! 🐶<br>
+                        • <strong>+1 (Renewable):</strong> Cún làm đúng -> Thưởng bánh.<br>
+                        • <strong>-5 (Mất điện):</strong> Cún cắn đồ -> Mắng phạt.<br>
+                        AI sẽ tự học cách làm đúng để được thưởng nhiều bánh nhất.
                     </div>
                 </div>
                 <div>
@@ -1047,6 +1064,14 @@
                         θ ← θ - α × ∇loss (Adam, lr=1e-4)</div>
                 </div>
                 <div>
+                    <div class="highlight-box mt-8 mb-16"
+                        style="font-size: 13px; background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6;">
+                        💡 <strong>Góc nhìn Non-IT (DQN):</strong><br>
+                        DQN giống như <strong>học vẹt bằng Flashcards</strong>.<br>
+                        • <strong>Experience Replay:</strong> Xáo trộn thẻ bài để học ngẫu nhiên, tránh học tủ.<br>
+                        • <strong>Target Network:</strong> Giữ nguyên đáp án một lúc để ôn tập cho nhớ, tránh đề bài
+                        thay đổi liên xoành xoạch.
+                    </div>
                     <h3>Trong Bài Viết, Cần Có:</h3>
                     <ul class="check-list">
                         <li>Tại sao chọn DQN (so sánh thuật toán)</li>
@@ -1090,6 +1115,13 @@
                         clip(ratio,0.8,1.2)×A)
 
                         Total: L_π + 0.5×L_v - 0.01×H</div>
+                    <div class="highlight-box mt-16"
+                        style="font-size: 13px; background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6;">
+                        💡 <strong>Góc nhìn Non-IT (PPO):</strong><br>
+                        PPO giống như <strong>Huấn luyện viên thể thao</strong> 🏃.<br>
+                        • Không bắt thay đổi tòan bộ kỹ thuật ngay (dễ chấn thương).<br>
+                        • Chỉ chỉnh sửa <strong>từng chút một (Clipped)</strong> để tiến bộ vững chắc.
+                    </div>
                 </div>
                 <div>
                     <h3>DQN vs PPO — Chọn cái nào?</h3>
@@ -1186,6 +1218,14 @@
                     <div class="highlight-box mt-8" style="font-size:13px;">
                         📊 Notebook đã tự sinh đồ thị — chỉ cần <strong>chạy Bước 3</strong> rồi <strong>phân tích kết
                             quả</strong>.
+                    </div>
+                    <div class="highlight-box mt-8"
+                        style="font-size: 13px; background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6;">
+                        💡 <strong>Góc nhìn Non-IT (Chiến thuật):</strong><br>
+                        AI học được chiêu <strong>"Buôn gian bán lận"</strong>:<br>
+                        • <strong>Đêm/Sáng:</strong> Giá rẻ -> Tích trữ hàng (Sạc pin).<br>
+                        • <strong>Trưa:</strong> Hàng free (Solar) -> Gom hết về kho.<br>
+                        • <strong>Chiều tối:</strong> Giá đắt -> Xả kho bán kiếm lời (Xả pin).
                     </div>
                 </div>
             </div>

@@ -32,6 +32,16 @@ Thành phần thứ ba là **pin lưu trữ năng lượng (Battery Energy Stora
 
 Thành phần cuối cùng là **kết nối lưới điện quốc gia (Utility Grid)** — nguồn dự phòng khi tái tạo và pin không đủ đáp ứng nhu cầu. Điểm đáng chú ý là giá điện lưới biến động theo thời gian: thấp vào off-peak hours (đêm, sáng sớm) và cao vào peak hours (17h-21h). Sự biến động giá này tạo cơ hội tối ưu hóa chi phí nếu có chiến lược mua điện thông minh.
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Bài toán "Đi chợ thông minh"**
+>
+> Hãy tưởng tượng hệ thống microgrid giống như việc quản lý chi tiêu cho bếp ăn gia đình bạn.
+>
+> - **Solar & Wind (Năng lượng tái tạo):** Giống như rau củ bạn tự trồng được trong vườn. Lúc thì được mùa (nắng to, gió lớn), lúc thì mất mùa (mưa bão), nhưng quan trọng là nó "miễn phí".
+> - **Pin lưu trữ:** Giống như cái tủ lạnh. Rau củ ăn không hết thì bỏ tủ lạnh để dành, lúc nào vườn không có rau thì lấy ra dùng. Nhưng tủ lạnh có sức chứa giới hạn (dung lượng pin) và việc cất vào/lấy ra liên tục cũng làm rau bớt tươi (hao mòn pin).
+> - **Lưới điện:** Giống như đi siêu thị mua rau. Siêu thị lúc nào cũng có bán, nhưng giá cả thay đổi theo giờ (giờ cao điểm đắt, giờ thấp điểm rẻ).
+>
+> **Mục tiêu của AI:** Là người quản gia thông minh, biết nhìn trời nhìn đất để quyết định: Trưa nay nắng to rau đầy vườn thì ăn rau vườn, dư thì cất tủ lạnh. Chiều tối rau đắt thì lấy tủ lạnh ra ăn chứ đừng đi siêu thị. Chỉ khi nào vườn hết rau, tủ lạnh trống rỗng mới bất đắc dĩ đi siêu thị mua, mà phải canh lúc siêu thị giảm giá hãy mua.
+
 ### 1.2 Tại Sao Đây Là Bài Toán Ra Quyết Định Tuần Tự?
 
 Phân phối năng lượng trong microgrid thỏa mãn đầy đủ các đặc điểm của một bài toán ra quyết định tuần tự (sequential decision-making problem). Để hiểu rõ, ta phân tích ba đặc điểm quan trọng sau.
@@ -55,6 +65,16 @@ Các phương pháp **heuristic** như Genetic Algorithm (GA) hay Particle Swarm
 ### 1.4 Tại Sao Reinforcement Learning Phù Hợp?
 
 Reinforcement Learning khắc phục các hạn chế trên một cách triệt để. Thứ nhất, RL là **model-free** — agent không cần biết trước mô hình toán học của hệ thống mà tự học chính sách tối ưu thông qua tương tác trực tiếp với môi trường. Thứ hai, RL tự nhiên **adaptive** — policy được cập nhật liên tục nên có thể thích ứng với các điều kiện mới. Thứ ba, cơ chế **discount factor γ** cho phép agent tự động cân bằng giữa lợi ích ngắn hạn và dài hạn mà không cần lập trình tường minh. Cuối cùng, RL xử lý tốt **uncertainty** — vì agent được train trên hàng nghìn episodes với demand và renewable generation ngẫu nhiên, nó phát triển policy robust với nhiều kịch bản khác nhau.
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Tại sao cần AI "học" (Learning)?**
+>
+> Các phương pháp truyền thống giống như việc lập trình một con robot bằng những câu lệnh cứng nhắc: "Nếu thấy tường thì rẽ trái". Nếu gặp cái hố thay vì bức tường, robot sẽ đứng im hoặc rơi xuống hố vì chưa được dạy tình huống đó.
+>
+> **Reinforcement Learning (Học tăng cường)** giống như cách dạy một chú chó hoặc một đứa trẻ tập đi xe đạp:
+>
+> - Bạn không viết công thức vật lý cân bằng cho đứa bé.
+> - Thay vào đó, đứa bé tự thử: đạp xe -> ngã (đau = phạt/phần thưởng âm) -> lần sau sửa tư thế. Đạp xe -> đi được một đoạn (vui = phần thưởng dương).
+> - Sau hàng ngàn lần thử sai (trong môi trường giả lập), AI tự rút ra kinh nghiệm "xương máu" để điều khiển hệ thống điện một cách linh hoạt nhất, ứng phó được cả những tình huống mưa nắng thất thường mà người lập trình không lường trước hết được.
 
 ---
 
@@ -100,8 +120,19 @@ Việc sử dụng action rời rạc thay vì liên tục có ba lý do: phù h
 
 Hàm phần thưởng (reward function) được thiết kế cẩn thận để hướng dẫn agent học chính sách mong muốn. Reward tại mỗi bước được tính theo công thức:
 
-```
 R(s, a, s') = R_renewable + R_grid + R_unmet + R_battery + R_bonus
+
+```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Cách chấm điểm cho AI**
+>
+> Để dạy AI làm đúng ý mình, chúng ta dùng hệ thống thưởng/phạt tương tự như dạy thú cưng:
+> - **R_renewable (+1 điểm):** Dùng điện mặt trời/gió -> "Good boy!", cho cái bánh quy. Khuyến khích hành vi này.
+> - **R_grid (-2 điểm):** Mua điện lưới -> "Bad boy!", bị mắng nhẹ. AI sẽ hiểu là nên hạn chế, trừ khi bắt buộc.
+> - **R_unmet (-5 điểm):** Để nhà mất điện -> Phạt nặng! AI sẽ sợ và tìm mọi cách tránh tình huống này, coi đó là ưu tiên sống còn.
+> - **R_battery (-0.1 điểm):** Nghịch pin (sạc xả vô cớ) -> Bị nhắc nhở nhẹ. Để AI biết pin cũng cần giữ gìn, không nên dùng phung phí.
+>
+> Thông qua hàng triệu lần chơi thử và cộng điểm lại, AI sẽ tự hiểu chiến thuật tối ưu: "À, mình phải ráng dùng điện trời cho, hạn chế mua điện, và tuyệt đối không để mất điện thì mới được điểm cao nhất!"
 ```
 
 **Thành phần R_renewable = +1.0 × (renewable_used / base_demand)** thưởng cho việc sử dụng năng lượng tái tạo. Hệ số dương (+1.0) tạo incentive rõ ràng cho agent ưu tiên solar/wind. Chuẩn hóa theo base_demand đảm bảo reward ổn định bất kể quy mô nhu cầu.
@@ -144,6 +175,14 @@ Mạng Q-Network sử dụng kiến trúc Multi-Layer Perceptron (MLP) gồm 3 h
 
 **Epsilon-Greedy:** Exploration strategy bắt đầu với ε = 1.0 (100% random), giảm dần theo hệ số 0.995 mỗi episode đến ε_min = 0.01 (1% random). Ban đầu agent khám phá toàn bộ action space, dần dần chuyển sang exploit policy đã học.
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): DQN hoạt động như thế nào?**
+>
+> Hãy tưởng tượng DQN giống như một người chơi cờ vua học bằng cách ghi nhớ "Giá trị" của từng nước đi.
+>
+> - **Q-Value (Giá trị):** Với mỗi thế cờ (trạng thái), DQN cố gắng ước lượng xem đi nước nào thì cuối ván sẽ thắng to nhất.
+> - **Experience Replay (Ôn bài):** Thay vì chơi xong quên luôn, DQN ghi lại mọi ván đấu vào một cuốn "nhật ký". Tối về, nó lấy ngẫu nhiên các trang nhật ký ra đọc lại để rút kinh nghiệm. Việc này giúp nó không bị "học vẹt" theo trình tự ván đấu mà hiểu sâu bản chất vấn đề.
+> - **Exploration (Khám phá):** Ban đầu, nó đánh lung tung (random) để biết thế nào là hay, thế nào là dở. Sau khi "khôn" ra rồi, nó mới bắt đầu đánh theo bài bản (exploit) nhưng thỉnh thoảng vẫn thử nước lạ để xem có gì mới mẻ không.
+
 ---
 
 ### 3.B — PPO (Proximal Policy Optimization)
@@ -164,6 +203,13 @@ Mạng Actor-Critic sử dụng shared feature extractor gồm 2 hidden layers [
 
 **Total Loss:** `L_total = L_policy + 0.5 × L_value - 0.01 × Entropy`. Entropy bonus khuyến khích exploration tự nhiên mà không cần ε-greedy.
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): PPO khác gì DQN?**
+>
+> Nếu DQN học bằng cách "nhớ giá trị", thì PPO học bằng cách "tinh chỉnh hành vi" (Policy) giống như một huấn luyện viên thể thao:
+>
+> - **Policy Gradient:** Thay vì chấm điểm từng nước đi, PPO nhìn vào kết quả cuối cùng và nói: "Trận này thắng, những gì em làm nãy giờ là tốt, hãy làm thế nhiều hơn một chút".
+> - **Clipped Objective (Giới hạn thay đổi):** Đây là điểm hay nhất của PPO. Nó cấm AI thay đổi chiến thuật quá đột ngột. Giống như khi sửa dáng swing golf: sửa từ từ từng chút một thì sẽ tiến bộ chắc chắn. Nếu sửa đổi loạn xạ quá nhanh, người chơi sẽ bị "tẩu hỏa nhập ma", hỏng luôn cả những kỹ năng đã học được trước đó. Chính vì sự "bình tĩnh" này mà PPO rất được ưa chuộng vì tính ổn định cao.
+
 ---
 
 ## PHẦN 4: PHÂN TÍCH TỐI ƯU HÓA AI (15%)
@@ -175,6 +221,16 @@ Sau quá trình training, agent đã tự phát hiện và học được một 
 Giai đoạn then chốt nhất là buổi trưa (10h-14h) khi solar ở đỉnh. Agent nhất quán chọn sạc pin — lưu trữ năng lượng "miễn phí" dư thừa để dùng vào buổi tối. Đây là minh chứng rõ ràng cho khả năng lập kế hoạch dài hạn: agent hy sinh reward tức thì (có thể dùng solar ngay) để đạt tổng reward cao hơn trong ngày. Battery level thường đạt gần 100% vào khoảng 14h.
 
 Buổi tối (18h-21h) — peak hours với giá lưới cao nhất — agent tối đa xả pin đã sạc đầy từ trưa, kết hợp với wind energy nếu có. Kết quả: agent hầu như không mua lưới trong peak hours, tiết kiệm chi phí đáng kể. Battery level giảm dần từ ~100% xuống ~20-30% vào cuối ngày.
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): "Chiến thuật con buôn" của AI**
+>
+> Sau quá trình tự luyện tập, AI đã trở thành một nhà buôn năng lượng lão luyện với chiến thuật "mua đáy bán đỉnh":
+>
+> 1. **Sáng sớm & Đêm:** Giá điện rẻ, gió lại nhiều -> Dùng điện gió, thiếu thì mua chút điện lưới. Giữ pin đó, đừng động vào.
+> 2. **Trưa nắng (Đỉnh điểm):** Điện mặt trời dư thừa ê hề -> Thay vì bỏ phí, hãy nhét hết vào pin (Sạc đầy). Đây là lúc tích trữ "hàng".
+> 3. **Chiều tối (Cao điểm):** Giá điện lưới tăng vọt -> Tuyệt đối không mua! Lấy kho hàng (pin) đã tích trữ lúc trưa ra dùng.
+>
+> Kết quả là hóa đơn tiền điện giảm hẳn vì AI toàn dùng đồ "của nhà trồng được" vào lúc người khác phải đi mua giá đắt.
 
 ### 4.2 Phân Tích Trade-offs
 

@@ -19,6 +19,13 @@
 2. Tính advantage: hành động này tốt hơn/kém hơn trung bình bao nhiêu?
 3. Update policy với **clipped objective** — ngăn policy thay đổi quá lớn
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): PPO là gì?**
+>
+> Nếu DQN giống như học vẹt (nhớ đáp án), thì **PPO** giống như một vận động viên tập kỹ thuật (nhớ động tác).
+>
+> - Vận động viên không cần nhớ điểm số của từng động tác, mà nhớ **cảm giác cơ thể** (Policy).
+> - PPO hoạt động như một huấn luyện viên giỏi: Thay vì bắt bạn thay đổi hoàn toàn dáng chạy ngay lập tức (dễ gây chấn thương/hỏng kỹ thuật), huấn luyện viên PPO chỉ bắt bạn sửa **từng chút một** (Proximal). Hôm nay chỉnh chân một tí, ngày mai chỉnh tay một tí. Nhờ vậy, kỹ thuật của bạn tiến bộ vững chắc, không bị "tẩu hỏa nhập ma".
+
 ### 1.2 Tại Sao PPO Là Lựa Chọn Thay Thế Tốt Cho DQN?
 
 | Tiêu chí | PPO | DQN |
@@ -151,6 +158,13 @@ Giải thích bằng ví dụ:
 - Nếu A < 0 (action xấu): giảm π(a|s), nhưng tối đa 1-ε = 0.8 lần
 → Policy không thay đổi quá nhiều mỗi update → STABLE
 ```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Clipped Objective (Cắt tỉa)**
+>
+> Đây là "cái phanh an toàn" của PPO.
+>
+> - Khi AI phát hiện ra một chiêu mới rất hay (ví dụ: xả hết pin lúc 5h chiều), nó thường có xu hướng phấn khích quá đà và áp dụng chiêu này mọi lúc mọi nơi. Điều này rất nguy hiểm.
+> - **Clipped Objective** giống như một người quản lý rủi ro, nói rằng: "Chiêu này hay đấy, nhưng chỉ được phép thay đổi chiến thuật tối đa 20% thôi (ε = 0.2). Đừng có đập đi xây lại toàn bộ hệ thống". Nhờ chiếc phanh này, AI không bao giờ bị "ngáo" và luôn giữ được sự ổn định.
 
 ### 3.3 Total Loss
 
@@ -323,6 +337,13 @@ Episode  200 | Reward: +12.10 | Renewable: 78.9%  ← Converged
 - ✅ **Robust**: Clipped objective ngăn divergence, ít cần tuning
 - ✅ **Scalable**: Dễ mở rộng sang continuous action space
 - ✅ **Natural exploration**: Entropy bonus → explore tự nhiên, không cần ε
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Tại sao PPO "mượt" hơn?**
+>
+> - **DQN (Cứng nhắc):** Tại mỗi thời điểm, DQN chỉ có 1 đáp án duy nhất: "Xả pin là tốt nhất!". Nó khá cực đoan.
+> - **PPO (Mềm dẻo):** PPO tư duy theo xác suất: "Xả pin có vẻ tốt nhất (80%), nhưng giữ pin cũng ok (20%)".
+>
+> Nhờ tư duy mềm dẻo này, PPO giống như một người chơi uyển chuyển, linh hoạt, trong khi DQN giống như một cỗ máy tính toán cứng nhắc dễ bị bắt bài.
 
 ### 8.2 Hạn Chế
 

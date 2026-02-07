@@ -15,6 +15,16 @@ Microgrid là một lưới điện nhỏ, cục bộ bao gồm:
 - **Kết nối lưới chính**: Có thể mua điện từ lưới điện quốc gia
 - **Tải tiêu thụ**: Nhu cầu điện từ hộ gia đình, công nghiệp, thương mại
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Bài toán "Đi chợ thông minh"**
+>
+> Hãy tưởng tượng hệ thống này giống như việc quản lý bếp ăn cho một gia đình lớn:
+>
+> - **Solar & Wind:** Như rau củ tự trồng được. Lúc được mùa (nắng/gió nhiều) thì tha hồ dùng, lúc mất mùa thì chịu. Quan trọng là nó miễn phí!
+> - **Pin lưu trữ:** Như cái tủ lạnh. Rau ăn không hết thì cất tủ lạnh (sạc pin), khi nào ngoài vườn không có rau thì lấy trong tủ ra ăn (xả pin).
+> - **Lưới điện:** Như đi siêu thị. Siêu thị lúc nào cũng có đồ, nhưng giá cả thay đổi theo giờ (giờ cao điểm đắt, thấp điểm rẻ).
+>
+> **Nhiệm vụ của AI:** Làm sao để cả nhà luôn no bụng (đủ điện) mà tốn ít tiền đi siêu thị nhất? AI phải tính toán: "Trưa nay nắng to, rau đầy vườn, ăn không hết thì cất tủ lạnh ngay. Tối nay rau siêu thị đắt lắm, lấy đồ trong tủ lạnh ra ăn chứ đừng đi mua!"
+
 ### 1.2 Tại Sao Đây Là Bài Toán Quyết Định Tuần Tự?
 
 Phân phối năng lượng là bài toán **sequential decision-making** vì:
@@ -39,6 +49,21 @@ RL có ưu điểm:
 - **Long-term optimization**: Xem xét hậu quả dài hạn của quyết định
 - **Handle uncertainty**: Xử lý tốt với stochastic demand và renewable generation
 - **No model required**: Không cần mô hình chính xác của hệ thống (model-free)
+
+- **No model required**: Không cần mô hình chính xác của hệ thống (model-free)
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Tại sao cần AI "học" (RL)?**
+>
+> Các phương pháp cũ giống như lập trình cho robot một bộ luật cứng nhắc: "Cứ 6h tối là bật đèn". Nhưng lỡ hôm đó trời tối sớm từ 5h thì sao? Robot sẽ không biết linh hoạt.
+>
+> **Reinforcement Learning (Học tăng cường)** giống như cách bạn dạy chú cún cưng:
+>
+> - Bạn không giải thích vật lý hay logic cho cún.
+> - Cún làm đúng (ngồi xuống khi bảo) -> Bạn cho bánh thưởng (+Reward).
+> - Cún làm sai (cắn giày) -> Bạn mắng nhẹ (-Penalty).
+> - Sau nhiều lần, cún tự hiểu: "À, muốn được bánh thì phải làm thế này, muốn không bị mắng thì tránh làm thế kia".
+>
+> AI trong bài toán này cũng vậy: nó tự thử nghiệm hàng triệu lần trong giả lập để rút ra kinh nghiệm xương máu về cách điều khiển điện, thay vì được lập trình sẵn từng dòng lệnh if-else.
 
 ---
 
@@ -140,7 +165,20 @@ R_grid      = -2.0 × (grid_purchased / base_demand) × normalized_price  # Ph�
 R_unmet     = -5.0 × (unmet_demand / base_demand)       # Phạt nặng nếu không đủ
 R_battery   = -0.1 × battery_activity                    # Phạt nhẹ hao mòn pin
 R_bonus     = +0.5 nếu không mua grid khi giá cao        # Bonus tiết kiệm
+R_battery   = -0.1 × battery_activity                    # Phạt nhẹ hao mòn pin
+R_bonus     = +0.5 nếu không mua grid khi giá cao        # Bonus tiết kiệm
 ```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Bảng điểm của AI**
+>
+> Để AI biết thế nào là "làm tốt", ta tạo ra một bảng điểm:
+>
+> - **Dùng điện mặt trời (+1 điểm):** "Hoan hô! Tiết kiệm tiền và bảo vệ môi trường."
+> - **Mua điện lưới (-2 điểm):** "Chê nhé! Tốn tiền quá." (Trừ nặng hơn nếu mua lúc giá đắt).
+> - **Để mất điện (-5 điểm):** "QUÁ TỆ! Đây là lỗi nghiêm trọng nhất, không được phép để xảy ra."
+> - **Nghịch pin liên tục (-0.1 điểm):** "Dùng vừa thôi, hỏng pin bây giờ."
+>
+> AI sẽ chơi "game" này hàng ngàn lần và cố gắng đạt điểm cao nhất có thể. Tự khắc nó sẽ học được cách: Ưu tiên dùng điện mặt trời > Hạn chế mua lưới > Tuyệt đối không để mất điện.
 
 **Justification:**
 
@@ -247,6 +285,15 @@ Input Layer    Hidden Layer 1   Hidden Layer 2   Hidden Layer 3   Output Layer
 1. **Decorrelation**: Samples liên tiếp có correlation cao → unstable training
 2. **Sample efficiency**: Mỗi transition được học nhiều lần
 3. **Stable learning**: Diverse batches → gradients ổn định hơn
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Tại sao cần "Ôn bài" (Replay)?**
+>
+> Khi đi học, nếu bạn chỉ học bài mới và quên ngay bài cũ, bạn sẽ không thể giỏi được.
+> **Experience Replay** giống như cuốn vở ghi chép của AI.
+>
+> - Mỗi khi AI thử một hành động (ví dụ: xả pin lúc 10h sáng), nó ghi lại kết quả vào vở: "Xả pin lúc 10h sáng -> Hết pin lúc tối -> Bị phạt nặng".
+> - Mỗi tối, AI không chỉ học bài của ngày hôm nay, mà còn lấy ngẫu nhiên các trang vở cũ ra ôn lại.
+> - Việc này giúp AI nhớ lâu: "À, bài học xương máu từ tuần trước là không được xả pin bừa bãi". Nó giúp AI không bị "học vẹt" chỉ biết làm theo thói quen gần nhất.
 
 ### 3.4 Target Network
 
@@ -400,6 +447,16 @@ Agent's Solution:
 - Sạc đầy pin trước peak hours
 - Xả pin đúng lúc giá cao nhất
 ```
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Chiến thuật "Con buôn" của AI**
+>
+> Sau khi tự học, AI đã trở thành một nhà buôn năng lượng thông minh với chiến thuật **"Mua đáy, Bán đỉnh"**:
+>
+> 1. **Sáng sớm & Đêm (Giá rẻ):** "Hàng" đầy chợ (gió nhiều, giá lưới rẻ). AI tranh thủ dùng, và quan trọng là **giữ nguyên kho hàng (pin)**, không bán ra.
+> 2. **Trưa (Nắng to):** "Hàng" miễn phí rơi đầy sân (điện mặt trời). AI nhặt hết vào kho (sạc đầy pin 100%). Đây là lúc tích trữ.
+> 3. **Chiều tối (Giá đắt cắt cổ):** Lúc này ai cũng cần điện, giá tăng vọt. AI mở kho (xả pin) ra dùng, tuyệt đối không đi mua ngoài.
+>
+> Kết quả: Nhờ biết tích trữ lúc rẻ/miễn phí và tung ra lúc đắt, AI giúp gia chủ tiết kiệm tới 92% tiền điện!
 
 ### 4.3 Learning Convergence Analysis
 

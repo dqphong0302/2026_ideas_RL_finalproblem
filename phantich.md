@@ -52,6 +52,36 @@ Nguồn dự phòng khi renewable + pin không đủ đáp ứng nhu cầu. Giá
 
 **Tại sao bài toán này KHÓ?** Vì solar/wind không ổn định (phụ thuộc thời tiết), demand thay đổi theo giờ, giá điện biến động, pin có giới hạn, và quyết định hiện tại ảnh hưởng tương lai. Quá phức tạp cho rule-based → cần AI (RL) tự học chiến lược tối ưu.
 
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Câu chuyện "Người Quản Gia Năng Lượng" 🏠**
+>
+> Hãy tưởng tượng hệ thống điện của bạn là một **Ngôi nhà thông minh**, và AI là **Người Quản Gia** được thuê về để điều hành mọi thứ.
+>
+> **1. Các thành viên trong nhà:**
+>
+> - **Ông Mặt Trời (Solar) & Chị Gió (Wind):** Hai người làm vườn chăm chỉ nhưng tính khí thất thường. Lúc vui (nắng to, gió lớn) thì cho rất nhiều rau củ (điện) miễn phí. Lúc buồn (mưa, lặng gió) thì chẳng cho gì.
+> - **Cậu Pin (Battery):** Cái tủ lạnh thần kỳ. Rau củ ăn không hết thì nhét vào đây để dành. Nhưng tủ có hạn, nhét đầy quá là không nhận nữa, mà để trống thì phí.
+> - **Siêu thị (Grid):** Luôn có bán rau củ, nhưng giá cả thay đổi theo giờ. Giờ cao điểm (chiều tối) bán đắt cắt cổ, giờ thấp điểm (đêm khuya) thì rẻ như cho.
+> - **Gia đình (Load):** Những người cần ăn (dùng điện). Đói là phải có ăn ngay, không được để đói (mất điện).
+>
+> **2. Một ngày làm việc của Quản Gia AI:**
+>
+> - **🌅 Buổi sáng (6h-10h):** Cả nhà ngủ dậy, cần điện. Nắng chưa nhiều. Quản gia nhìn tủ lạnh (Pin), thấy còn đồ thì lấy ra dùng. Nếu thiếu mới chạy ra siêu thị mua một ít.
+> - **☀️ Buổi trưa (10h-14h):** Nắng chang chang! Ông Mặt Trời cho quá nhiều rau. Cả nhà ăn không hết. Quản gia nhanh tay nhét đầy tủ lạnh (Sạc pin). Tủ đầy rồi mà vẫn dư? Bán bớt cho hàng xóm (nếu lưới cho bán) hoặc đành bỏ phí. Tuyệt đối không đi siêu thị giờ này!
+> - **🌆 Buổi chiều tối (17h-21h):** Giờ cao điểm! Siêu thị bán giá đắt nhất. Nắng đã tắt. Cả nhà đi làm về bật tivi, máy lạnh (nhu cầu cao). Quản gia thông minh sẽ **tuyệt đối không đi siêu thị**. Thay vào đó, ông ta lấy hết đồ dự trữ trong tủ lạnh từ trưa ra để dùng.
+> - **🌙 Ban đêm (22h-5h):** Tủ lạnh đã cạn sạch sau bữa tối. Giờ này siêu thị đại hạ giá. Quản gia đi siêu thị mua đầy tủ lạnh (Sạc pin giá rẻ) để chuẩn bị cho sáng hôm sau.
+>
+> ```mermaid
+> graph TD
+>     Solar[☀️ Solar/Wind] -->|Cung cấp điện| Microgrid
+>     Grid[⚡ Lưới điện] -->|Mua điện thiếu| Microgrid
+>     Microgrid -->|Dư thừa| Battery[🔋 Pin]
+>     Battery -->|Xả khi cần| Microgrid
+>     Microgrid -->|Cấp điện| Home[🏠 Hộ gia đình]
+>     style Solar fill:#f9d71c,stroke:#333,stroke-width:2px
+>     style Battery fill:#77dd77,stroke:#333,stroke-width:2px
+>     style Grid fill:#ff6961,stroke:#333,stroke-width:2px
+> ```
+
 ---
 
 ### 0.2 Mô Hình Hóa MDP — Dựa Trên Lý Thuyết Nào?
@@ -121,6 +151,49 @@ Dịch ra tiếng Việt:
 > 💡 **Tóm lại:** MDP không phải là phát minh trong bài này — nó là **framework toán học chuẩn** (từ 1957) để mô hình hóa mọi bài toán ra quyết định tuần tự. Bài toán microgrid chỉ **áp dụng** framework MDP bằng cách định nghĩa cụ thể S, A, P, R, γ cho hệ thống năng lượng.
 
 ---
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Quy trình ra quyết định (Step-by-Step)**
+>
+> Để quản gia AI không bị "loạn", ông ta tuân thủ quy trình 3 bước nghiệm ngặt mỗi giờ:
+>
+> **BƯỚC 1: QUAN SÁT (State - S)**
+> Ông ta cầm bảng checklist đi kiểm tra 8 thứ:
+>
+> 1. Pin còn bao nhiêu %? (Ví dụ: 50%)
+> 2. Nhà đang cần bao nhiêu điện? (Ví dụ: 10kW)
+> 3. Trời đang nắng hay mưa? (Solar: 5kW)
+> 4. Gió mạnh hay yếu? (Wind: 2kW)
+> 5. Giờ này siêu thị bán đắt hay rẻ? (Giá: Cao)
+> 6. Mấy giờ rồi? (18h00)
+> 7. Giờ trước mình vừa làm gì? (Vừa sạc xong)
+>
+> **BƯỚC 2: SUY NGHĨ & RA QUYẾT ĐỊNH (Policy - π)**
+> Dựa vào kinh nghiệm "đau thương" trong quá khứ (Training), ông ta tính toán trong đầu:
+>
+> - "Giờ này giá điện đắt, pin còn 50%. Nắng gió có ít (7kW) mà nhà cần 10kW. Thiếu 3kW."
+> - *Lựa chọn A:* Mua 3kW từ lưới -> Tốn tiền lắm! ❌
+> - *Lựa chọn B:* Xả pin 3kW -> Pin giảm xuống nhưng không mất tiền mua. ✅
+> -> **Quyết định:** Chọn B (Xả pin).
+>
+> **BƯỚC 3: HÀNH ĐỘNG & HẬU QUẢ (Action & Reward)**
+>
+> - Ông ta gạt cầu dao xả pin. (Action)
+> - Kết quả: Nhà có đủ điện, không tốn tiền mua lưới. (Reward +)
+> - Hậu quả phụ: Pin sụt xuống còn 40%. (State mới cho giờ sau)
+>
+> ```mermaid
+> sequenceDiagram
+>     participant Env as 🌍 Môi trường (Nhà + Lưới + Trời)
+>     participant Agent as 🤖 AI Quản gia
+>     Loop Mỗi giờ (từ 0h đến 23h)
+>         Env->>Agent: Báo cáo tình hình (State: Pin, Giá, Nắng...)
+>         Note over Agent: Suy nghĩ... (Dùng não DQN/PPO)
+>         Agent->>Env: Ra lệnh điều khiển (Action: Sạc/Xả/Mua)
+>         Env->>Agent: Kết quả & Điểm thưởng (Reward + State mới)
+>         Note over Agent: Rút kinh nghiệm (Học)
+>     End
+> ```
+>
+---
 
 ## 1. TÓM TẮT ĐỀ BÀI
 
@@ -186,6 +259,19 @@ Dịch ra tiếng Việt:
 - **Trừ nặng** khi thiếu điện cấp cho dân (hệ số -5.0, phạt nặng nhất)
 - **Trừ** khi mua lưới đắt (hệ số -2.0, đặc biệt giờ peak)
 - **Trừ nhẹ** khi pin bị hao mòn (hệ số -0.1)
+
+> **💡 Góc nhìn cho người không chuyên (Non-IT): Bảng Điểm Thi Đua 🏆**
+>
+> Hãy hình dung AI đi học và bị chấm điểm hằng ngày:
+>
+> | Hành động | Điểm số | Lời thầy cô phê |
+> |-----------|---------|-----------------|
+> | **Dùng điện mặt trời** | **+1 điểm** | "Ngoan! Biết tận dụng đồ nhà trồng." |
+> | **Để nhà mất điện** | **-5 điểm** | "Quá tệ! Phạm lỗi nghiêm trọng nhất." 😡 |
+> | **Mua điện giờ cao điểm**| **-2 điểm** | "Hoang phí! Sao không dùng pin?" |
+> | **Xả pin bừa bãi** | **-0.1 điểm** | "Cẩn thận! Xài hao pin quá." |
+>
+> AI sẽ cố gắng "cày điểm" để cuối ngày được phiếu bé ngoan (Reward cao nhất).
 
 **Transition & Termination** — Chuyển trạng thái & Kết thúc:
 
