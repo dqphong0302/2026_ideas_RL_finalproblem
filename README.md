@@ -1,14 +1,113 @@
 # 🔋 Microgrid Energy Optimization using Deep Reinforcement Learning
 
-## Tối Ưu Hóa Năng Lượng Microgrid Sử Dụng Deep Reinforcement Learning (DQN)
+## Tối Ưu Hóa Năng Lượng Microgrid Sử Dụng Deep Reinforcement Learning (DQN & PPO)
 
 ### 📁 Files
 
 | File | Mô Tả | Đối Tượng |
 |------|-------|-----------|
-| **`Microgrid_DQN_Simple.ipynb`** | ⭐ Phiên bản đơn giản, CHỈ 3 BƯỚC | Người mới bắt đầu |
-| `Microgrid_DQN_Colab.ipynb` | Phiên bản đầy đủ, chi tiết | Sinh viên nâng cao |
-| `REPORT.md` / `REPORT.html` | Báo cáo kết quả | Tất cả |
+| **`Microgrid_DQN_Simple.ipynb`** | ⭐ DQN đơn giản, CHỈ 3 BƯỚC | Người mới bắt đầu |
+| **`Microgrid_PPO_Simple.ipynb`** | ⭐ PPO đơn giản, CHỈ 3 BƯỚC | Người mới bắt đầu |
+| `Microgrid_DQN_Colab.py` | DQN phiên bản đầy đủ, chi tiết | Sinh viên nâng cao |
+| `Microgrid_PPO_Colab.py` | PPO phiên bản đầy đủ, chi tiết | Sinh viên nâng cao |
+| `REPORT_DQN.md` | Báo cáo chi tiết phương pháp DQN | Tất cả |
+| `REPORT_PPO.md` | Báo cáo chi tiết phương pháp PPO | Tất cả |
+| `REPORT.md` | Báo cáo tổng hợp đồ án | Tất cả |
+
+---
+
+## 🔀 SO SÁNH DQN vs PPO — Hai Phương Pháp RL Khác Nhau
+
+### Tổng Quan
+
+Dự án này triển khai **hai nhóm thuật toán RL** cho cùng bài toán microgrid:
+
+| | **DQN** (Deep Q-Network) | **PPO** (Proximal Policy Optimization) |
+|---|---|---|
+| **Nhóm** | Value-based | Policy-based (Actor-Critic) |
+| **Paper** | Mnih et al., 2015 (Nature) | Schulman et al., 2017 (OpenAI) |
+| **Ý tưởng** | Học giá trị Q(s,a) → chọn action có Q cao nhất | Học trực tiếp policy π(a\|s) → sample action từ distribution |
+
+### Kiến Trúc Mạng
+
+```
+DQN:    State(8) → [256→256→128] → Q-values(5)      ← 1 head, output Q cho mỗi action
+PPO:    State(8) → [128→128] → Actor: π(a|s)(5)      ← 2 heads: policy + value
+                             → Critic: V(s)(1)
+```
+
+| Đặc điểm | DQN | PPO |
+|-----------|-----|-----|
+| **Output** | Q(s, a₀)...Q(s, a₄) | π(a\|s) + V(s) |
+| **Activation** | ReLU | Tanh |
+| **Initialization** | Xavier | Orthogonal |
+| **Regularization** | Dropout 0.1 | Entropy bonus |
+
+### Cách Chọn Action
+
+```
+DQN (ε-greedy):                    PPO (stochastic policy):
+┌──────────────────────┐           ┌──────────────────────┐
+│ if random() < ε:     │           │ probs = Actor(state) │
+│   action = random()  │           │ action = sample(probs)│
+│ else:                │           │                      │
+│   action = argmax Q  │           │ → TỰ NHIÊN explore   │
+│                      │           │   (entropy cao =     │
+│ → CẦN ε-greedy      │           │    đa dạng action)   │
+│   để explore         │           │                      │
+└──────────────────────┘           └──────────────────────┘
+```
+
+### Cách Training
+
+```
+DQN (Off-policy):                  PPO (On-policy):
+┌──────────────────────┐           ┌──────────────────────┐
+│ 1. Tương tác env     │           │ 1. Thu thập rollout  │
+│ 2. Lưu replay buffer │           │    (nhiều episodes)  │
+│ 3. Random sample     │           │ 2. Tính GAE advantage│
+│    batch (64)        │           │ 3. Clipped update    │
+│ 4. MSE loss cập nhật │           │    (10 epochs)       │
+│ 5. Sync target net   │           │ 4. Clear buffer      │
+│    (mỗi 1000 steps)  │           │    (dùng 1 lần!)     │
+│                      │           │                      │
+│ Update: MỖI STEP     │           │ Update: MỖI 4 EP     │
+│ Data: TÁI SỬ DỤNG   │           │ Data: DÙNG 1 LẦN     │
+└──────────────────────┘           └──────────────────────┘
+```
+
+### Stability Trick
+
+| Vấn đề | DQN | PPO |
+|--------|-----|-----|
+| **Moving target** | Target Network (copy mỗi 1000 steps) | — |
+| **Policy collapse** | — | Clipped objective (ratio ∈ [0.8, 1.2]) |
+| **Gradient explosion** | Gradient clipping | Gradient clipping |
+| **Overestimation** | Double DQN | Không có vấn đề này |
+
+### Công Thức Chính
+
+```
+DQN Loss:   L = (Q(s,a) - [r + γ × max Q_target(s',a')])²
+
+PPO Loss:   L = -min(ratio × A, clip(ratio, 1-ε, 1+ε) × A)
+            + 0.5 × MSE(V_pred, V_target)
+            - 0.01 × Entropy(π)
+
+            ratio = π_new(a|s) / π_old(a|s)
+            A = GAE advantage
+```
+
+### Khi Nào Dùng Cái Nào?
+
+| Tình huống | Chọn | Lý do |
+|------------|------|-------|
+| Action rời rạc, ít action | **DQN** | DQN tối ưu cho discrete |
+| Cần sample efficient | **DQN** | Replay buffer tái sử dụng data |
+| Muốn đơn giản, dễ debug | **DQN** | Ít hyperparameters hơn |
+| Muốn policy smooth | **PPO** | Xác suất thay đổi mượt mà |
+| Có thể mở rộng continuous | **PPO** | Dễ scale sang continuous action |
+| Cần robust, ít tuning | **PPO** | Clipped objective tự ổn định |
 
 ---
 
@@ -99,7 +198,7 @@ def select_action(self, state):
 | Cải tiến | Mô tả | Lợi ích tiềm năng |
 |----------|-------|-------------------|
 | **Multi-Agent RL** | Nhiều agent quản lý các zone khác nhau | Scalable cho grid lớn |
-| **PPO/A2C** | Thuật toán Policy Gradient thay DQN | Ổn định hơn, sample efficient |
+| **PPO/A2C** ✅ | Thuật toán Policy Gradient thay DQN | Đã triển khai trong project |
 | **Continuous Actions** | Dùng DDPG/SAC cho action liên tục | Điều khiển chính xác hơn |
 | **Demand Forecasting** | Kết hợp LSTM dự đoán demand | Proactive planning |
 | **Multi-objective RL** | Tối ưu đồng thời cost, reliability, emissions | Cân bằng nhiều mục tiêu |
@@ -1086,4 +1185,4 @@ print(f"Using device: {device}")
 ---
 
 *Tài liệu hướng dẫn chi tiết cho đề bài Microgrid Energy Optimization using Deep Reinforcement Learning*
-*Phiên bản: 2.0 - Cập nhật: Tháng 2/2026*
+*Phiên bản: 3.0 - Cập nhật: 07/02/2026 - Thêm PPO và so sánh DQN vs PPO*

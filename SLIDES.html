@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microgrid RL - Hướng Dẫn Giải Đề</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 80px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Backgrounds */
+        .bg-gradient-1 {
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 50%, #0d1b3e 100%);
+        }
+
+        .bg-gradient-2 {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0a1628 100%);
+        }
+
+        .bg-gradient-3 {
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0d3e 100%);
+        }
+
+        .bg-gradient-4 {
+            background: linear-gradient(135deg, #0a2e1a 0%, #1b4e2d 50%, #0d3e1a 100%);
+        }
+
+        .bg-gradient-5 {
+            background: linear-gradient(135deg, #2e1a0a 0%, #4e2d1b 50%, #3e1a0d 100%);
+        }
+
+        .bg-dark {
+            background: linear-gradient(180deg, #0a0a1a 0%, #111128 100%);
+        }
+
+        /* Title slide */
+        .title-slide {
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 30%, #2d1b69 60%, #0d1b3e 100%);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+        }
+
+        .title-slide .emoji-big {
+            font-size: 64px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title-slide h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .title-slide .subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            font-weight: 400;
+            position: relative;
+            max-width: 700px;
+        }
+
+        /* Section headers */
+        .section-header {
+            align-items: center;
+            text-align: center;
+        }
+
+        .section-header .section-number {
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        .section-header h2 {
+            font-size: 38px;
+            font-weight: 800;
+            color: #fff;
+            margin: 8px 0;
+        }
+
+        .section-header .section-desc {
+            font-size: 18px;
+            color: #94a3b8;
+            max-width: 600px;
+        }
+
+        /* Content slides */
+        h2 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 28px;
+        }
+
+        h2 .accent {
+            color: #818cf8;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #a78bfa;
+            margin: 16px 0 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .tag-req {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .tag-guide {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tag-code {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .tag-tip {
+            background: rgba(236, 72, 153, 0.2);
+            color: #f472b6;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card .card-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .card .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .card .card-text {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a78bfa;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Code */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.08));
+            border-left: 3px solid #818cf8;
+            border-radius: 0 8px 8px 0;
+            padding: 16px 20px;
+            margin: 12px 0;
+        }
+
+        .highlight-box.green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.08));
+            border-left-color: #34d399;
+        }
+
+        .highlight-box.orange {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.08));
+            border-left-color: #fbbf24;
+        }
+
+        .highlight-box.red {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.08));
+            border-left-color: #f87171;
+        }
+
+        /* Steps */
+        .step-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .step-content .step-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        /* Progress indicator */
+        .slide-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 100;
+        }
+
+        .slide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slide-dot.active {
+            background: #818cf8;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Nav buttons */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: #818cf8;
+        }
+
+        .nav-prev {
+            left: 16px;
+        }
+
+        .nav-next {
+            right: 16px;
+        }
+
+        /* Slide counter */
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 100;
+            font-weight: 500;
+        }
+
+        /* Lists */
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            padding: 5px 0 5px 20px;
+            font-size: 14px;
+            color: #cbd5e1;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #818cf8;
+        }
+
+        .check-list li::before {
+            content: '✓';
+            color: #34d399;
+        }
+
+        /* Diagram */
+        .diagram {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+            color: #94a3b8;
+        }
+
+        /* Weight badge */
+        .weight-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 8px;
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        /* Scroll for overflow */
+        .scrollable {
+            overflow-y: auto;
+            max-height: calc(100vh - 160px);
+            padding-right: 10px;
+        }
+
+        .scrollable::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text-sm {
+            font-size: 13px;
+        }
+
+        .text-muted {
+            color: #64748b;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mt-16 {
+            margin-top: 16px;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="slide-container" id="slideContainer">
+
+        <!-- SLIDE 0: Title -->
+        <div class="slide title-slide active" data-bg="title">
+            <div class="emoji-big">🔋⚡🤖</div>
+            <h1>Tối Ưu Hóa Năng Lượng Microgrid<br>Sử Dụng Deep Reinforcement Learning</h1>
+            <div class="subtitle">Hướng dẫn chi tiết: Yêu cầu đề bài & Cách giải từng phần</div>
+            <div style="margin-top: 32px; position: relative;">
+                <span class="tag tag-req">DQN</span>
+                <span class="tag tag-guide" style="margin-left: 8px;">PPO</span>
+                <span class="tag tag-code" style="margin-left: 8px;">Python + PyTorch</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 1: Overview -->
+        <div class="slide bg-gradient-1">
+            <span class="tag tag-req">Tổng quan</span>
+            <h2>📋 Cấu Trúc Đề Bài <span class="accent">— 6 Phần</span></h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Phần 1: Mô Tả Vấn Đề <span class="weight-badge">15%</span></div>
+                    <div class="card-text">Giải thích hệ thống microgrid, tại sao là bài toán sequential decision, hạn
+                        chế phương pháp truyền thống</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧮</div>
+                    <div class="card-title">Phần 2: Mô Hình MDP <span class="weight-badge">20%</span></div>
+                    <div class="card-text">States (8D), Actions (5), Reward function, Transition dynamics, Episode
+                        termination</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <div class="card-title">Phần 3: Thuật Toán RL <span class="weight-badge">25%</span></div>
+                    <div class="card-text">Chọn DQN hoặc Policy Gradient, code Python có comment, giải thích kiến trúc
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">Phần 4: Phân Tích AI <span class="weight-badge">15%</span></div>
+                    <div class="card-text">Agent tối ưu như thế nào, trade-offs, convergence analysis</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Phần 5: Kết Quả <span class="weight-badge">15%</span></div>
+                    <div class="card-text">Đồ thị, bảng biểu, so sánh với baseline, phân tích kết quả</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title">Phần 6: Đạo Đức & Tương Lai <span class="weight-badge">10%</span></div>
+                    <div class="card-text">Vấn đề đạo đức, thách thức triển khai, hướng phát triển</div>
+                </div>
+            </div>
+            <div class="highlight-box mt-16" style="font-size:14px;">
+                💡 <strong>Lưu ý:</strong> Bài nộp là <strong>Google Colab Notebook (.ipynb)</strong> — code + giải
+                thích + đồ thị trong cùng 1 file. Sử dụng PyTorch hoặc TensorFlow.
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Section Header - PART 1 -->
+        <div class="slide bg-dark section-header">
+            <div class="section-number">STEP 1</div>
+            <h2>YÊU CẦU ĐỀ BÀI</h2>
+            <div class="section-desc">Phân tích chi tiết từng phần của đề bài — bạn cần làm gì và chuẩn bị gì</div>
+        </div>
+
+        <!-- SLIDE 3: Bài toán Microgrid -->
+        <div class="slide bg-gradient-2">
+            <span class="tag tag-req">Phần 1 — 15%</span>
+            <h2>🔋 Bài Toán <span class="accent">Microgrid</span></h2>
+            <div class="grid-2">
+                <div>
+                    <div class="diagram" style="font-size: 12px; text-align: left;">
+                        ☀️ Solar PV ────┐
+                        │
+                        🌬️ Wind ────────┤
+                        ├──► 🤖 RL Agent ──► ⚡ Cấp điện
+                        🔋 Battery ─────┤ quyết định
+                        │ phân phối
+                        ⚡ Grid ─────────┘</div>
+                    <div class="highlight-box mt-16">
+                        <strong>Mục tiêu 3 trong 1:</strong><br>
+                        ✅ Giảm chi phí điện lưới<br>
+                        ✅ Tối đa năng lượng tái tạo<br>
+                        ✅ Đảm bảo đủ điện (reliability)
+                    </div>
+                </div>
+                <div>
+                    <h3>4 Thành Phần Hệ Thống</h3>
+                    <table>
+                        <tr>
+                            <th>Thành phần</th>
+                            <th>Đặc điểm</th>
+                        </tr>
+                        <tr>
+                            <td>☀️ Solar PV</td>
+                            <td>Cao nhất 10-14h, = 0 ban đêm, có nhiễu</td>
+                        </tr>
+                        <tr>
+                            <td>🌬️ Wind</td>
+                            <td>Ngẫu nhiên, cả ngày lẫn đêm</td>
+                        </tr>
+                        <tr>
+                            <td>🔋 Battery</td>
+                            <td>100 kWh, hiệu suất 95%</td>
+                        </tr>
+                        <tr>
+                            <td>⚡ Grid</td>
+                            <td>Giá biến động: thấp off-peak, cao 17-21h</td>
+                        </tr>
+                    </table>
+                    <h3 class="mt-16">Yêu Cầu Cần Viết</h3>
+                    <ul>
+                        <li>Giải thích microgrid là gì</li>
+                        <li>Tại sao là bài toán sequential decision</li>
+                        <li>Hạn chế phương pháp truyền thống</li>
+                        <li>Tại sao RL phù hợp hơn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: MDP Requirements -->
+        <div class="slide bg-gradient-2">
+            <span class="tag tag-req">Phần 2 — 20%</span>
+            <h2>🧮 Yêu Cầu: <span class="accent">Mô Hình Hóa MDP</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>State Space — 8 biến</h3>
+                    <table>
+                        <tr>
+                            <th>#</th>
+                            <th>Biến</th>
+                            <th>Ý nghĩa</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>battery_level</td>
+                            <td>Mức pin [0,1]</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>demand</td>
+                            <td>Nhu cầu điện</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>solar</td>
+                            <td>Sản lượng solar</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>wind</td>
+                            <td>Sản lượng wind</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>price</td>
+                            <td>Giá điện lưới</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>hour_sin</td>
+                            <td>sin(2π×h/24)</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>hour_cos</td>
+                            <td>cos(2π×h/24)</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>prev_action</td>
+                            <td>Action trước</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3>Action Space — 5 hành động rời rạc</h3>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Action</th>
+                            <th>Khi nào</th>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>Xả pin</td>
+                            <td>Peak price + pin đủ</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Sạc renewable</td>
+                            <td>Solar/wind dư</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mua lưới</td>
+                            <td>Thiếu renewable + pin</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Renew + Xả pin</td>
+                            <td>Ưu tiên renew, hỗ trợ pin</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Renew + Lưới</td>
+                            <td>Ưu tiên renew, mua grid</td>
+                        </tr>
+                    </table>
+                    <h3 class="mt-16">Reward Function</h3>
+                    <div class="code-block" style="font-size: 12px;">R = +1.0×renewable - 2.0×grid×price
+                        - 5.0×unmet - 0.1×battery_wear
+                        + 0.5×(bonus nếu tránh peak)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Algorithm Requirements -->
+        <div class="slide bg-gradient-2">
+            <span class="tag tag-req">Phần 3 — 25%</span>
+            <h2>🤖 Yêu Cầu: <span class="accent">Thuật Toán & Code</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Chọn 1 trong 2 nhóm</h3>
+                    <div class="card mb-16">
+                        <div class="card-title">🔵 Option A: DQN (Value-based)</div>
+                        <div class="card-text">
+                            • Q-Network xấp xỉ Q(s,a)<br>
+                            • Experience Replay Buffer<br>
+                            • Target Network<br>
+                            • Epsilon-greedy exploration<br>
+                            <strong style="color:#818cf8">→ Phù hợp: discrete actions, đơn giản</strong>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🟣 Option B: PPO (Policy Gradient)</div>
+                        <div class="card-text">
+                            • Actor-Critic Network<br>
+                            • GAE Advantage Estimation<br>
+                            • Clipped Surrogate Objective<br>
+                            • Entropy bonus exploration<br>
+                            <strong style="color:#a78bfa">→ Phù hợp: policy smooth, scalable</strong>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Sản Phẩm Cần Nộp</h3>
+                    <ul class="check-list">
+                        <li>Lựa chọn thuật toán + lý giải tại sao</li>
+                        <li>Code Python (PyTorch) — có comment đầy đủ</li>
+                        <li>Giải thích kiến trúc neural network</li>
+                        <li>Bảng hyperparameters + lý do chọn</li>
+                        <li>Pseudocode training loop</li>
+                    </ul>
+                    <div class="highlight-box orange mt-16">
+                        ⚠️ <strong>QUAN TRỌNG:</strong> Phần này chiếm <strong>25%</strong> — nặng nhất! Code phải chạy
+                        được, có comment giải thích, và reproducible (set seed).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: Results & Ethics Requirements -->
+        <div class="slide bg-gradient-2">
+            <span class="tag tag-req">Phần 4, 5, 6</span>
+            <h2>📊 Yêu Cầu: <span class="accent">Kết Quả & Đạo Đức</span></h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">Phần 4: Phân Tích AI <span class="weight-badge">15%</span></div>
+                    <div class="card-text">
+                        • Agent tối ưu hóa NHƯ THẾ NÀO<br>
+                        • Trade-offs đã cân bằng<br>
+                        • Convergence analysis<br>
+                        • Hạn chế của approach<br>
+                        <br><em style="color:#818cf8">→ Cần phân tích sâu, không chỉ mô tả</em>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Phần 5: Kết Quả <span class="weight-badge">15%</span></div>
+                    <div class="card-text">
+                        • Đồ thị training curves<br>
+                        • Bảng so sánh vs baseline<br>
+                        • Episode analysis 24h<br>
+                        • Action distribution<br>
+                        <br><em style="color:#818cf8">→ Cần đồ thị đẹp + bảng số liệu</em>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title">Phần 6: Đạo Đức <span class="weight-badge">10%</span></div>
+                    <div class="card-text">
+                        • Công bằng năng lượng<br>
+                        • Bảo mật dữ liệu<br>
+                        • Rủi ro tự động hóa<br>
+                        • Hướng phát triển tương lai<br>
+                        <br><em style="color:#818cf8">→ Thảo luận có chiều sâu</em>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-box green mt-16" style="font-size: 14px;">
+                ✅ <strong>Tóm tắt:</strong> Bài tốt = Code chạy được (25%) + MDP hợp lý (20%) + Phân tích sâu (15%) + Đồ
+                thị đẹp (15%) + Mô tả rõ (15%) + Đạo đức (10%)
+            </div>
+        </div>
+
+        <!-- SLIDE 7: Section Header - STEP 2 -->
+        <div class="slide bg-dark section-header">
+            <div class="section-number">STEP 2</div>
+            <h2>HƯỚNG DẪN GIẢI CHI TIẾT</h2>
+            <div class="section-desc">Hướng dẫn từng bước giải bài — từ setup đến nộp bài hoàn chỉnh</div>
+        </div>
+
+        <!-- SLIDE 8: Bước 1 - Setup -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải</span>
+            <h2>🚀 Bước 1: <span class="accent">Setup & Cá Nhân Hóa</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Mở Notebook trên Colab</h3>
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Upload notebook</div>
+                            <div class="step-desc">Mở colab.google.com → Upload → chọn file .ipynb</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Bật GPU</div>
+                            <div class="step-desc">Runtime → Change runtime type → GPU (T4)</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Chạy ô cài đặt</div>
+                            <div class="step-desc">pip install gymnasium torch numpy matplotlib</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Cá Nhân Hóa (BẮT BUỘC)</h3>
+                    <div class="code-block" style="font-size: 12px;"># ⚠️ Thay đổi giá trị này!
+                        SEED = 42 # Mỗi SV khác nhau
+                        EPISODES = 200 # 100-500
+                        LEARNING_RATE = 3e-4
+
+                        # Gợi ý theo MSSV:
+                        # SV1: SEED=42, LR=3e-4
+                        # SV2: SEED=123, LR=1e-4
+                        # SV3: SEED=456, LR=5e-4
+                        # SV4: SEED=789, LR=2e-4
+                        # SV5: SEED=999, LR=4e-4</div>
+                    <div class="highlight-box red mt-16" style="font-size: 13px;">
+                        ⚠️ <strong>Phải thay SEED!</strong> Nếu giống bạn khác = bị đánh giá là copy. Kết quả sẽ khác
+                        nhau do seed khác.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: Giải Phần 1 -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 1</span>
+            <h2>📝 Cách Viết <span class="accent">Mô Tả Vấn Đề</span> <span class="weight-badge">15%</span></h2>
+            <div class="scrollable">
+                <div class="grid-2">
+                    <div>
+                        <h3>Cấu trúc bài viết</h3>
+                        <div class="step-item">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Giới thiệu Microgrid (1 trang)</div>
+                                <div class="step-desc">Định nghĩa, 4 thành phần (solar, wind, battery, grid), mỗi thành
+                                    phần 1 đoạn</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Sequential Decision (1/2 trang)</div>
+                                <div class="step-desc">3 đặc điểm: temporal coupling, delayed consequences, short vs
+                                    long term</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Hạn chế phương pháp cũ (1/2 trang)</div>
+                                <div class="step-desc">Bảng so sánh: Rule-based, LP, MPC, Heuristic</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-num">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Tại sao RL? (1/2 trang)</div>
+                                <div class="step-desc">4 ưu điểm: model-free, adaptive, long-term, handle uncertainty
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💡 Tips Viết Điểm Cao</h3>
+                        <div class="highlight-box green" style="font-size: 13px;">
+                            ✅ <strong>NÊN:</strong><br>
+                            • Viết đoạn văn, không chỉ liệt kê bullet<br>
+                            • Cho ví dụ cụ thể (giá điện 17h vs 2h)<br>
+                            • Vẽ sơ đồ hệ thống microgrid<br>
+                            • Trích dẫn paper (Mnih 2015, Schulman 2017)
+                        </div>
+                        <div class="highlight-box red mt-8" style="font-size: 13px;">
+                            ❌ <strong>TRÁNH:</strong><br>
+                            • Copy nguyên văn từ nguồn<br>
+                            • Chỉ liệt kê không giải thích<br>
+                            • Bỏ qua phần "tại sao RL"<br>
+                            • Không có ví dụ minh họa
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: Giải Phần 2 -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 2</span>
+            <h2>🧮 Cách Viết <span class="accent">MDP</span> <span class="weight-badge">20%</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Cần trình bày gì?</h3>
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Sơ đồ MDP tổng quan</div>
+                            <div class="step-desc">Vẽ diagram: Environment → State → Agent → Action → Reward → loop
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Bảng State Space (8 biến)</div>
+                            <div class="step-desc">Mỗi biến: tên, range, ý nghĩa, LÝ DO đưa vào</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Bảng Action Space (5 actions)</div>
+                            <div class="step-desc">Mỗi action: mô tả, khi nào nên dùng</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Reward Function + Justification</div>
+                            <div class="step-desc">Công thức, hệ số, LÝ DO chọn hệ số đó</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Transitions & Termination</div>
+                            <div class="step-desc">Công thức cập nhật pin, demand, kết thúc episode</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>💡 Key: Giải thích sin/cos encoding</h3>
+                    <div class="code-block" style="font-size: 12px;">Vấn đề: hour = 0,1,...,23
+                        → 23h và 0h "xa nhau" (dist=23)
+                        → Nhưng thực tế chỉ cách 1h!
+
+                        Giải pháp:
+                        hour_sin = sin(2π × hour / 24)
+                        hour_cos = cos(2π × hour / 24)
+
+                        → 23h: (sin≈0, cos≈1)
+                        0h: (sin=0, cos=1)
+                        → Bây giờ "gần nhau"! ✅</div>
+                    <div class="highlight-box mt-16" style="font-size: 13px;">
+                        🎯 <strong>Điểm mấu chốt:</strong> Phần 2 chiếm 20% — giám khảo muốn thấy bạn
+                        <strong>HIỂU</strong> từng thành phần MDP, không chỉ copy công thức. Viết LÝ DO cho mỗi lựa chọn
+                        thiết kế.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: Giải Phần 3 - DQN -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 3A</span>
+            <h2>🔵 Cách Giải: <span class="accent">DQN</span> <span class="weight-badge">25%</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Kiến Trúc Cần Giải Thích</h3>
+                    <div class="code-block" style="font-size: 12px;">State(8) → [256→ReLU→256→ReLU→128→ReLU] → Q(5)
+
+                        3 thành phần chính:
+
+                        1. Q-Network + Target Network
+                        → Target cố định mỗi 1000 steps
+                        → Tránh "moving target"
+
+                        2. Experience Replay Buffer (100K)
+                        → Random sample batch 64
+                        → Phá vỡ temporal correlation
+
+                        3. Epsilon-Greedy (1.0 → 0.01)
+                        → Ban đầu explore, sau exploit</div>
+                    <h3 class="mt-16">Công Thức Update</h3>
+                    <div class="code-block" style="font-size: 12px;">target = r + γ × max Q_target(s', a')
+                        loss = (Q(s,a) - target)²
+                        θ ← θ - α × ∇loss (Adam, lr=1e-4)</div>
+                </div>
+                <div>
+                    <h3>Trong Bài Viết, Cần Có:</h3>
+                    <ul class="check-list">
+                        <li>Tại sao chọn DQN (so sánh thuật toán)</li>
+                        <li>Sơ đồ kiến trúc neural network</li>
+                        <li>Giải thích Experience Replay</li>
+                        <li>Giải thích Target Network</li>
+                        <li>Giải thích Epsilon-Greedy</li>
+                        <li>Bảng hyperparameters + lý do</li>
+                        <li>Pseudocode training loop</li>
+                        <li>Code snippet có comment</li>
+                    </ul>
+                    <div class="highlight-box orange mt-16" style="font-size: 13px;">
+                        📁 <strong>File sẵn:</strong><br>
+                        <code>Microgrid_DQN_Simple.ipynb</code> — Chạy 3 bước<br>
+                        <code>REPORT_DQN.md</code> — Báo cáo chi tiết<br>
+                        → Dùng làm tham khảo, <strong>phải viết lại bằng lời mình</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: Giải Phần 3 - PPO -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 3B</span>
+            <h2>🟣 Cách Giải: <span class="accent">PPO</span> <span class="weight-badge">25%</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Kiến Trúc Actor-Critic</h3>
+                    <div class="code-block" style="font-size: 12px;">State(8) → Shared[128→Tanh→128→Tanh]
+                        │
+                        ┌────┴────┐
+                        Actor Critic
+                        128→5 128→1
+                        Softmax (linear)
+                        → π(a|s) → V(s)</div>
+                    <h3 class="mt-16">Công Thức PPO</h3>
+                    <div class="code-block" style="font-size: 12px;">GAE: A_t = Σ(γλ)^l × δ_{t+l}
+                        δ_t = r + γV(s') - V(s)
+
+                        Clip: L = min(ratio×A,
+                        clip(ratio,0.8,1.2)×A)
+
+                        Total: L_π + 0.5×L_v - 0.01×H</div>
+                </div>
+                <div>
+                    <h3>DQN vs PPO — Chọn cái nào?</h3>
+                    <table>
+                        <tr>
+                            <th>Tiêu chí</th>
+                            <th>DQN</th>
+                            <th>PPO</th>
+                        </tr>
+                        <tr>
+                            <td>Độ khó code</td>
+                            <td>⭐⭐</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td>Ổn định</td>
+                            <td>Tốt</td>
+                            <td>Rất tốt</td>
+                        </tr>
+                        <tr>
+                            <td>Điểm ấn tượng</td>
+                            <td>Trung bình</td>
+                            <td>Cao</td>
+                        </tr>
+                        <tr>
+                            <td>Dễ giải thích</td>
+                            <td>Dễ</td>
+                            <td>Khó hơn</td>
+                        </tr>
+                    </table>
+                    <div class="highlight-box green mt-16" style="font-size: 13px;">
+                        💡 <strong>Khuyến nghị:</strong><br>
+                        • Nếu muốn <strong>an toàn</strong> → DQN (đơn giản, dễ giải thích)<br>
+                        • Nếu muốn <strong>điểm cao</strong> → PPO (ấn tượng hơn, policy gradient)<br>
+                        • Nếu muốn <strong>nổi bật</strong> → Làm CẢ HAI và so sánh!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: Giải Phần 4-5 -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 4 & 5</span>
+            <h2>📊 Cách Viết <span class="accent">Phân Tích & Kết Quả</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Phần 4: Phân Tích AI (15%)</h3>
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Bảng hành vi agent theo giờ</div>
+                            <div class="step-desc">0-6h: Grid+Renew, 10-14h: Sạc pin, 18-21h: Xả pin. Giải thích TẠI SAO
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <div class="step-title">3 Trade-offs chính</div>
+                            <div class="step-desc">Cost vs Renewable, Battery wear vs Value, Short vs Long term</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Hạn chế & cải tiến</div>
+                            <div class="step-desc">Discrete actions, no forecasting, sim-to-real gap</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Phần 5: Kết Quả (15%)</h3>
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Bảng metrics chính</div>
+                            <div class="step-desc">Agent vs Random: Reward, Cost, Renewable%, Unmet%</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <div class="step-title">3 đồ thị bắt buộc</div>
+                            <div class="step-desc">Training curves, Agent vs Random bars, Episode 24h analysis</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Thảo luận kết quả</div>
+                            <div class="step-desc">Giải thích CON SỐ, không chỉ liệt kê. "Tại sao reward tăng?"</div>
+                        </div>
+                    </div>
+                    <div class="highlight-box mt-8" style="font-size:13px;">
+                        📊 Notebook đã tự sinh đồ thị — chỉ cần <strong>chạy Bước 3</strong> rồi <strong>phân tích kết
+                            quả</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: Giải Phần 6 -->
+        <div class="slide bg-gradient-3">
+            <span class="tag tag-guide">Hướng dẫn giải — Phần 6</span>
+            <h2>⚖️ Cách Viết <span class="accent">Đạo Đức & Tương Lai</span> <span class="weight-badge">10%</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>4 Vấn Đề Đạo Đức</h3>
+                    <div class="card mb-8">
+                        <div class="card-title">1. Công bằng năng lượng</div>
+                        <div class="card-text">AI ưu tiên tối ưu cost → có thể bỏ qua nhóm yếu thế. Giải pháp: thêm
+                            constraint demand satisfaction tối thiểu.</div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="card-title">2. Rủi ro tự động hóa</div>
+                        <div class="card-text">AI sai → mất điện → thiệt hại. Giải pháp: human-in-the-loop, fallback
+                            rule-based.</div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="card-title">3. Bảo mật dữ liệu</div>
+                        <div class="card-text">Data tiêu thụ tiết lộ thói quen sinh hoạt. Giải pháp: differential
+                            privacy, GDPR.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">4. Trách nhiệm pháp lý</div>
+                        <div class="card-text">AI gây lỗi → ai chịu trách nhiệm? Developer? Operator? Cần quy định rõ.
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>5 Hướng Phát Triển Tương Lai</h3>
+                    <div class="card mb-8">
+                        <div class="card-title">🔗 Multi-Agent RL</div>
+                        <div class="card-text">Nhiều microgrid hợp tác, chia sẻ năng lượng dư</div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="card-title">🔮 Demand Forecasting</div>
+                        <div class="card-text">Tích hợp LSTM dự đoán demand 24h → proactive</div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="card-title">🎯 Continuous Actions</div>
+                        <div class="card-text">DDPG/SAC cho control chính xác kW</div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="card-title">🔄 Transfer Learning</div>
+                        <div class="card-text">Train 1 lần, deploy nhiều microgrid</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🛡️ Safe RL</div>
+                        <div class="card-text">Constrained optimization, đảm bảo an toàn</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: Quy trình nộp bài -->
+        <div class="slide bg-gradient-4">
+            <span class="tag tag-tip">Checklist</span>
+            <h2>✅ Quy Trình Hoàn Thành <span class="accent">& Nộp Bài</span></h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Checklist Trước Khi Nộp</h3>
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Thay đổi SEED + hyperparameters</div>
+                            <div class="step-desc">Đảm bảo kết quả khác bạn khác</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Chạy notebook từ đầu đến cuối</div>
+                            <div class="step-desc">Runtime → Run all, đảm bảo không lỗi</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Viết phân tích cho mỗi phần</div>
+                            <div class="step-desc">Markdown cells giải thích + phân tích kết quả</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Kiểm tra đồ thị + bảng biểu</div>
+                            <div class="step-desc">Có title, legend, axis labels đầy đủ</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Thêm references</div>
+                            <div class="step-desc">APA/IEEE format, ít nhất 4-5 papers</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">6</div>
+                        <div class="step-content">
+                            <div class="step-title">Download và nộp</div>
+                            <div class="step-desc">.ipynb (notebook) + .pdf (report nếu cần)</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>📁 Files Tham Khảo Có Sẵn</h3>
+                    <table>
+                        <tr>
+                            <th>File</th>
+                            <th>Dùng để</th>
+                        </tr>
+                        <tr>
+                            <td style="color:#818cf8">Microgrid_DQN_Simple.ipynb</td>
+                            <td>Chạy DQN 3 bước</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#a78bfa">Microgrid_PPO_Simple.ipynb</td>
+                            <td>Chạy PPO 3 bước</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#34d399">ESSAY_TEMPLATE.md</td>
+                            <td>Template bài essay</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#fbbf24">REPORT_DQN.md</td>
+                            <td>Tham khảo giải thích DQN</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#fbbf24">REPORT_PPO.md</td>
+                            <td>Tham khảo giải thích PPO</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#f472b6">REPORT.md</td>
+                            <td>Báo cáo tổng hợp mẫu</td>
+                        </tr>
+                    </table>
+                    <div class="highlight-box green mt-16" style="font-size: 13px;">
+                        🏆 <strong>Mẹo điểm cao:</strong> Làm CẢ HAI thuật toán (DQN + PPO) và so sánh → ấn tượng giám
+                        khảo!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: End -->
+        <div class="slide title-slide">
+            <div class="emoji-big">🎓</div>
+            <h1>Chúc Các Bạn<br>Hoàn Thành Tốt Đồ Án!</h1>
+            <div class="subtitle">Bắt đầu sớm • Thay đổi SEED • Viết phân tích sâu • Trích dẫn đầy đủ</div>
+            <div style="margin-top: 40px; position: relative;">
+                <div style="font-size: 14px; color: #64748b;">
+                    📁 Tài liệu: REPORT_DQN.md | REPORT_PPO.md | ESSAY_TEMPLATE.md<br>
+                    📓 Notebooks: Microgrid_DQN_Simple.ipynb | Microgrid_PPO_Simple.ipynb
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <button class="nav-btn nav-prev" onclick="changeSlide(-1)">‹</button>
+    <button class="nav-btn nav-next" onclick="changeSlide(1)">›</button>
+    <div class="slide-counter" id="slideCounter">1 / 17</div>
+    <div class="slide-nav" id="slideNav"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let current = 0;
+
+        function initNav() {
+            const nav = document.getElementById('slideNav');
+            slides.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                nav.appendChild(dot);
+            });
+        }
+
+        function goToSlide(n) {
+            slides[current].classList.remove('active');
+            document.querySelectorAll('.slide-dot')[current].classList.remove('active');
+            current = n;
+            slides[current].classList.add('active');
+            document.querySelectorAll('.slide-dot')[current].classList.add('active');
+            document.getElementById('slideCounter').textContent = `${current + 1} / ${slides.length}`;
+        }
+
+        function changeSlide(dir) {
+            let next = current + dir;
+            if (next < 0) next = slides.length - 1;
+            if (next >= slides.length) next = 0;
+            goToSlide(next);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        initNav();
+    </script>
+
+</body>
+
+</html>
